@@ -18,30 +18,63 @@
     <p id="copy-message" style="color: var(--primary-dark); margin-top: 10px; font-weight: 600; display: none;">✅ Copied to clipboard!</p>
 
     <script>
+        function copyToClipboardFallback(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";  // Avoid scrolling to bottom
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                var successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                return successful;
+            } catch (err) {
+                document.body.removeChild(textArea);
+                return false;
+            }
+        }
+
         document.getElementById('copy-btn').addEventListener('click', function() {
             var linkInput = document.getElementById('secret-link');
-            
-            // Select the text field and copy
-            linkInput.select();
-            linkInput.setSelectionRange(0, 99999); 
-            
-            navigator.clipboard.writeText(linkInput.value).then(function() {
-                var message = document.getElementById('copy-message');
-                message.style.display = 'block';
-                
-                // Temporarily change button style for feedback
-                var button = document.getElementById('copy-btn');
-                var originalText = button.textContent;
-                button.textContent = 'Copied!';
-                
-                setTimeout(function() {
-                    message.style.display = 'none';
-                    button.textContent = originalText; // Revert button text
-                }, 1500); 
-            }).catch(function(err) {
-                console.error('Could not copy text: ', err);
-                alert("Could not automatically copy the link. Please copy it manually: \n" + linkInput.value);
-            });
+            var linkValue = linkInput.value;
+            var message = document.getElementById('copy-message');
+            var button = document.getElementById('copy-btn');
+            var originalText = button.textContent;
+
+            // Attempt to use the modern, preferred Clipboard API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(linkValue).then(function() {
+                    showSuccessMessage(message, button, originalText);
+                }).catch(function(err) {
+                    // If modern API fails (due to security or permission), use fallback
+                    console.error('Modern copy failed. Trying fallback.', err);
+                    if (copyToClipboardFallback(linkValue)) {
+                        showSuccessMessage(message, button, originalText);
+                    } else {
+                        alert("Automatic copy failed. Please copy the link manually: \n" + linkValue);
+                    }
+                });
+            } else {
+                // Use fallback for older browsers or non-secure HTTP
+                if (copyToClipboardFallback(linkValue)) {
+                    showSuccessMessage(message, button, originalText);
+                } else {
+                    alert("Automatic copy failed. Please copy the link manually: \n" + linkValue);
+                }
+            }
         });
+
+        function showSuccessMessage(messageElement, buttonElement, originalText) {
+            messageElement.style.display = 'block';
+            
+            buttonElement.textContent = 'Copied!';
+            
+            setTimeout(function() {
+                messageElement.style.display = 'none';
+                buttonElement.textContent = originalText; // Revert button text
+            }, 1500);
+        }
     </script>
 {% endblock %}
