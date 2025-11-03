@@ -116,7 +116,7 @@ input[type="text"]:focus {
     border: 1px solid #9ca3af;
 }
 
-/* Secret View Box */
+/* Secret View Box - includes the word-wrap fix */
 .alert-success {
     background-color: var(--success-bg);
     border: 1px solid var(--success-border);
@@ -129,6 +129,9 @@ input[type="text"]:focus {
     justify-content: center;
     text-align: center;
     font-weight: 700;
+    /* FIX: Ensures long strings (passwords/keys) wrap correctly */
+    word-wrap: break-word; 
+    overflow-wrap: break-word;
 }
 
 /* Error Box */
