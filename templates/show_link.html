@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Your Secret Link{% endblock %}
+
+{% block head_meta %}
+    <meta http-equiv="refresh" content="15; url={{ url_for('home') }}">
+{% endblock %}
+
+{% block content %}
+    <h2>✨ Link Generated!</h2>
+    <p><strong>Crucial:</strong> This link is for one-time use only. Copy it and share it immediately, then close this page. The secret will be destroyed upon first access.</p>
+    
+    <div class="form-group">
+        <label for="secret-link">Shareable Link (Expires in 15 seconds on refresh):</label>
+        <input type="text" id="secret-link" value="{{ link }}" readonly>
+    </div>
+    
+    <button class="btn" id="copy-btn">Copy Link to Clipboard</button>
+    <p id="copy-message" style="color: var(--primary-dark); margin-top: 10px; font-weight: 600; display: none;">✅ Copied to clipboard!</p>
+
+    <script>
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            var linkInput = document.getElementById('secret-link');
+            
+            // Select the text field and copy
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); 
+            
+            navigator.clipboard.writeText(linkInput.value).then(function() {
+                var message = document.getElementById('copy-message');
+                message.style.display = 'block';
+                
+                // Temporarily change button style for feedback
+                var button = document.getElementById('copy-btn');
+                var originalText = button.textContent;
+                button.textContent = 'Copied!';
+                
+                setTimeout(function() {
+                    message.style.display = 'none';
+                    button.textContent = originalText; // Revert button text
+                }, 1500); 
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+                alert("Could not automatically copy the link. Please copy it manually: \n" + linkInput.value);
+            });
+        });
+    </script>
+{% endblock %}

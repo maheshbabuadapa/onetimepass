@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Create a Secret{% endblock %}
+
+{% block content %}
+    <h2>🔒 Create a View-Once Secret</h2>
+    <p>Enter your password, API key, or sensitive message below. We will generate a secure, single-use link that **permanently deletes** the secret after the first view.</p>
+    
+    <form action="/create" method="POST">
+        <div class="form-group">
+            <label for="secret">Secret Content:</label>
+            <input type="text" id="secret" name="secret" placeholder="e.g., YourTemporaryPassword123" required>
+        </div>
+        <button type="submit" class="btn">Generate One-Time Link</button>
+    </form>
+{% endblock %}
