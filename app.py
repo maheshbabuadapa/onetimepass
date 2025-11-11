@@ -46,6 +46,16 @@ def view_secret(token):
 
 
 if __name__ == '__main__':
-    # Run on 0.0.0.0 to be accessible from your network
-    # on port 5004.
-    app.run(debug=True, host='0.0.0.0', port=5004)
+    # --- START OF REQUIRED SSL CHANGE ---
+
+    # 1. Ensure you have extracted your private key and certificate 
+    #    into two separate files (e.g., 'server.crt' and 'server.key').
+    
+    # 2. Update the app.run() call to use 'ssl_context'.
+    app.run(
+        debug=True, 
+        host='0.0.0.0', 
+        port=5004,
+        ssl_context=('server.crt', 'server.key') # <--- KEY CHANGE: (certificate_file, private_key_file)
+    )
+    # --- END OF REQUIRED SSL CHANGE ---
